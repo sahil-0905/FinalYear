@@ -1,3 +1,4 @@
+
 import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ children, allowedRole }) {
@@ -5,11 +6,18 @@ function ProtectedRoute({ children, allowedRole }) {
   const role = localStorage.getItem("role");
 
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  if (allowedRole && role !== allowedRole) {
-    return <Navigate to="/login" />;
+  // Supports one role or multiple roles
+  if (allowedRole) {
+    const allowedRoles = Array.isArray(allowedRole)
+      ? allowedRole
+      : [allowedRole];
+
+    if (!allowedRoles.includes(role)) {
+      return <Navigate to="/login" replace />;
+    }
   }
 
   return children;
